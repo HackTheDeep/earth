@@ -50,5 +50,5 @@ app.use(express.compress({filter: compressionFilter}));
 app.use(logger());
 app.use(express.static("public"));
 
-app.listen(port);
+app.listen(process.env.PORT || port);
 console.log("Listening on port " + port + "...");

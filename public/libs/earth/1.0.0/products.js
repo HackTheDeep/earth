@@ -16,6 +16,11 @@ var products = function() {
         // most recent. For example: [ 20140101-abc.json, 20140106-abc.json, 20140112-abc.json, ... ]
         oscar: µ.loadJson([OSCAR_PATH, "catalog.json"].join("/"))
     };
+  var temp = µ.loadJson("/data/plastic/garbage_patch_only_400.json")
+    .then(res => {
+      window.plastics = res;
+      window.plasticsLoaded = true;
+    })
 
     function buildProduct(overrides) {
         return _.extend({
@@ -694,3 +699,28 @@ var products = function() {
     };
 
 }();
+
+var latRatio = 1440 / 360;
+var lonRatio = 723 / 180;
+window.plasticsLoaded = false;
+var trajectoryIndex = 0;
+function drawPlastic (ctx) {
+  if (!plasticsLoaded || !(trajectoryIndex < 2400)) return;
+  trajectoryIndex++;
+  ctx.strokeStyle = 'red';
+  var i;
+  for (i = 0; i < 50; i++) {
+    var index = i * 2401 + trajectoryIndex
+    var lat = window.plastics.lat[index];
+    var lon = window.plastics.lon[index];
+    var destLat = window.plastics.lat[index + 2401];
+    var destLon = window.plastics.lon[index + 2401];
+    if (lat && lon && destLat && destLon) {
+      ctx.moveTo(lat * latRatio, (90 - lon) * lonRatio);
+      ctx.lineTo(destLat * latRatio, (90 - destLon) * lonRatio);
+      ctx.stroke();
+      // console.log(`${lat} ${lon}`);
+      // console.log(`${destLat} ${destLon}`);
+    }
+  }
+}

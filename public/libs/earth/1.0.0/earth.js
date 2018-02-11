@@ -82,6 +82,7 @@
     var fieldAgent = newAgent();     // the interpolated wind vector field
     var animatorAgent = newAgent();  // the wind animator
     var overlayAgent = newAgent();   // color overlay over the animation
+    var plasticAgent = newAgent();
 
     /**
      * The input controller is an object that translates move operations (drag and/or zoom) into mutations of the
@@ -605,7 +606,8 @@
             var prev = g.globalCompositeOperation;
             g.globalCompositeOperation = "destination-in";
             g.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
-            g.globalCompositeOperation = prev;
+          g.globalCompositeOperation = prev;
+          drawPlastic(g);
 
             // Draw new particle trails.
             buckets.forEach(function(bucket, i) {
@@ -667,7 +669,7 @@
             if (overlayType !== "off") {
                 ctx.putImageData(field.overlay, 0, 0);
             }
-            drawGridPoints(ctx, grid, globeAgent.value());
+          drawGridPoints(ctx, grid, globeAgent.value());
         }
 
         if (grid) {
@@ -985,6 +987,7 @@
 
         animatorAgent.listenTo(fieldAgent, "update", function(field) {
             animatorAgent.submit(animate, globeAgent.value(), field, gridAgent.value());
+            plasticAgent.submit(animate, globeAgent.value(), field, gridAgent.value());
         });
         animatorAgent.listenTo(rendererAgent, "start", stopCurrentAnimation.bind(null, true));
         animatorAgent.listenTo(gridAgent, "submit", stopCurrentAnimation.bind(null, false));
@@ -1122,3 +1125,5 @@
     when(true).then(init).then(start).otherwise(report.error);
 
 })();
+
+
